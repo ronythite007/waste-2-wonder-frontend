@@ -95,7 +95,6 @@ export default function WasteUpload() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [currentStep, setCurrentStep] = useState(1);
   const [showPreview, setShowPreview] = useState(false);
-  const [analyzing, setAnalyzing] = useState(false);
   const [savingState, setSavingState] = useState<Record<string, boolean>>({});
   const [suggestions, setSuggestions] = useState<Array<{
     id: string;
@@ -474,27 +473,27 @@ export default function WasteUpload() {
   const selectedCategory = categories.find(cat => cat.value === formData.category);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-emerald-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-emerald-50 py-4 sm:py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-green-500 to-blue-500 rounded-full mb-6 shadow-lg">
-            <Upload className="h-10 w-10 text-white" />
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-gradient-to-r from-green-500 to-blue-500 rounded-full mb-3 sm:mb-4 md:mb-6 shadow-lg">
+            <Upload className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 text-white" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-3 px-4">
             Transform Waste into Wonder
           </h1>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+          <p className="text-sm sm:text-base lg:text-lg text-gray-600 max-w-3xl mx-auto px-4">
             Upload your waste item with detailed information to get personalized AI-powered upcycling suggestions with step-by-step instructions.
           </p>
         </div>
 
         {/* Progress Steps */}
-        <div className="mb-8">
-          <div className="flex items-center justify-center space-x-4 mb-6">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex items-center justify-center space-x-1 sm:space-x-2 md:space-x-4 mb-4 sm:mb-6 overflow-x-auto pb-2">
             {steps.map((step, index) => (
               <div key={step.number} className="flex items-center">
-                <div className={`flex items-center justify-center w-12 h-12 rounded-full border-2 transition-all duration-300 ${
+                <div className={`flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-full border-2 transition-all duration-300 flex-shrink-0 ${
                   currentStep >= step.number
                     ? 'bg-green-500 border-green-500 text-white'
                     : currentStep === step.number
@@ -502,13 +501,13 @@ export default function WasteUpload() {
                     : 'bg-white border-gray-300 text-gray-400'
                 }`}>
                   {currentStep > step.number ? (
-                    <CheckCircle className="h-6 w-6" />
+                    <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
                   ) : (
-                    <step.icon className="h-6 w-6" />
+                    <step.icon className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
                   )}
                 </div>
                 {index < steps.length - 1 && (
-                  <div className={`w-16 h-1 mx-2 transition-all duration-300 ${
+                  <div className={`w-6 sm:w-10 md:w-16 h-0.5 sm:h-1 mx-0.5 sm:mx-1 md:mx-2 transition-all duration-300 ${
                     currentStep > step.number ? 'bg-green-500' : 'bg-gray-200'
                   }`} />
                 )}
@@ -516,45 +515,45 @@ export default function WasteUpload() {
             ))}
           </div>
           <div className="text-center">
-            <h2 className="text-xl font-semibold text-gray-900">
+            <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 px-4">
               Step {currentStep}: {steps[currentStep - 1].title}
             </h2>
-            <p className="text-gray-600 mt-1">
+            <p className="text-sm sm:text-base text-gray-600 mt-1 px-4">
               {steps[currentStep - 1].description}
             </p>
           </div>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
+        <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden">
           {/* Success Message */}
           {success && (
-            <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-6">
+            <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-4 sm:p-6">
               <div className="flex items-center justify-between text-white">
-                <div className="flex items-center">
-                  <CheckCircle className="h-8 w-8 mr-4" />
-                  <div>
-                    <h3 className="text-xl font-bold">Item uploaded successfully!</h3>
-                    <p className="text-green-100">Your waste item has been processed. Check below for AI-powered suggestions!</p>
+                <div className="flex items-center flex-1 pr-2">
+                  <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 mr-2 sm:mr-4 flex-shrink-0" />
+                  <div className="min-w-0">
+                    <h3 className="text-base sm:text-lg lg:text-xl font-bold">Item uploaded successfully!</h3>
+                    <p className="text-sm sm:text-base text-green-100">Your waste item has been processed. Check below for AI-powered suggestions!</p>
                   </div>
                 </div>
                 <button
                   onClick={() => setSuccess(false)}
-                  className="text-white hover:text-green-100 p-2"
+                  className="text-white hover:text-green-100 p-2 flex-shrink-0"
                 >
-                  <X className="h-6 w-6" />
+                  <X className="h-5 w-5 sm:h-6 sm:w-6" />
                 </button>
               </div>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="p-8">
+          <form onSubmit={handleSubmit} className="p-4 sm:p-6 lg:p-8">
             {/* Step 1: Basic Information */}
             {currentStep === 1 && (
               <div className="space-y-8">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   {/* Waste Type */}
                   <div className="lg:col-span-2">
-                    <label htmlFor="type" className="block text-lg font-semibold text-gray-900 mb-3">
+                    <label htmlFor="type" className="block text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">
                       What type of waste item do you have? *
                     </label>
                     <input
@@ -563,10 +562,10 @@ export default function WasteUpload() {
                       name="type"
                       value={formData.type}
                       onChange={handleChange}
-                      className={`w-full px-4 py-4 text-lg border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 transition-all ${
+                      className={`w-full px-3 py-3 sm:px-4 sm:py-4 text-base sm:text-lg border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 transition-all ${
                         errors.type ? 'border-red-300 bg-red-50' : 'border-gray-300'
                       }`}
-                      placeholder="e.g., Large plastic water bottle, Cardboard shipping box, Old cotton t-shirt"
+                      placeholder="e.g., Large plastic water bottle..."
                     />
                     {errors.type && (
                       <p className="mt-2 text-sm text-red-600 flex items-center">
@@ -578,29 +577,29 @@ export default function WasteUpload() {
 
                   {/* Description */}
                   <div className="lg:col-span-2">
-                    <label htmlFor="description" className="block text-lg font-semibold text-gray-900 mb-3">
+                    <label htmlFor="description" className="block text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">
                       Detailed Description *
                     </label>
                     <textarea
                       id="description"
                       name="description"
-                      rows={6}
+                      rows={4}
                       value={formData.description}
                       onChange={handleChange}
-                      className={`w-full px-4 py-4 text-lg border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 resize-none transition-all ${
+                      className={`w-full px-3 py-3 sm:px-4 sm:py-4 text-base sm:text-lg border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 resize-none transition-all ${
                         errors.description ? 'border-red-300 bg-red-50' : 'border-gray-300'
                       }`}
-                      placeholder="Provide detailed information: What is it? How was it used? What condition is it in? Any damage or wear? Size, color, brand, etc. The more details you provide, the better AI suggestions you'll receive!"
+                      placeholder="Provide detailed information: What is it? How was it used? What condition is it in? Any damage or wear? Size, color, brand, etc."
                     />
-                    <div className="flex justify-between items-center mt-2">
+                    <div className="flex justify-between items-center mt-2 flex-wrap gap-1">
                       {errors.description ? (
-                        <p className="text-sm text-red-600 flex items-center">
-                          <AlertCircle className="h-4 w-4 mr-1" />
+                        <p className="text-xs sm:text-sm text-red-600 flex items-center">
+                          <AlertCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                           {errors.description}
                         </p>
                       ) : (
-                        <p className="text-sm text-gray-500">
-                          {formData.description.length}/1000 characters (minimum 20 for better AI suggestions)
+                        <p className="text-xs sm:text-sm text-gray-500">
+                          {formData.description.length}/1000 (min 20)
                         </p>
                       )}
                     </div>
@@ -609,27 +608,27 @@ export default function WasteUpload() {
 
                 {/* Category Selection */}
                 <div>
-                  <label className="block text-lg font-semibold text-gray-900 mb-4">
+                  <label className="block text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
                     Select Category *
                   </label>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                     {categories.map(category => (
                       <button
                         key={category.value}
                         type="button"
                         onClick={() => setFormData(prev => ({ ...prev, category: category.value }))}
-                        className={`p-4 rounded-xl border-2 text-left transition-all duration-200 ${
+                        className={`p-3 sm:p-4 rounded-xl border-2 text-left transition-all duration-200 ${
                           formData.category === category.value
-                            ? 'border-green-500 bg-green-50 text-green-700 shadow-lg transform scale-105'
+                            ? 'border-green-500 bg-green-50 text-green-700 shadow-lg'
                             : 'border-gray-200 hover:border-green-300 hover:bg-green-50 hover:shadow-md'
                         }`}
                       >
-                        <div className="flex items-start space-x-3">
-                          <span className="text-2xl">{category.icon}</span>
-                          <div className="flex-1">
-                            <div className="font-semibold text-lg">{category.value}</div>
-                            <div className="text-sm text-gray-600 mt-1">{category.description}</div>
-                            <div className="text-xs text-gray-500 mt-2">
+                        <div className="flex items-start space-x-2 sm:space-x-3">
+                          <span className="text-lg sm:text-xl md:text-2xl flex-shrink-0" role="img" aria-label={category.value}>{category.icon}</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-semibold text-sm sm:text-base lg:text-lg truncate">{category.value}</div>
+                            <div className="text-xs sm:text-sm text-gray-600 mt-1 line-clamp-1">{category.description}</div>
+                            <div className="text-xs text-gray-500 mt-2 line-clamp-1">
                               Examples: {category.examples.slice(0, 2).join(', ')}
                             </div>
                           </div>
@@ -647,17 +646,17 @@ export default function WasteUpload() {
 
                 {/* Category Tips */}
                 {selectedCategory && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 sm:p-4">
                     <div className="flex items-start">
-                      <Lightbulb className="h-5 w-5 text-blue-600 mr-2 mt-0.5" />
-                      <div>
-                        <h4 className="font-semibold text-blue-900">Tips for {selectedCategory.value}</h4>
-                        <p className="text-blue-800 text-sm mt-1">{selectedCategory.tips}</p>
+                      <Lightbulb className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-sm sm:text-base text-blue-900">Tips for {selectedCategory.value}</h4>
+                        <p className="text-blue-800 text-xs sm:text-sm mt-1">{selectedCategory.tips}</p>
                         <div className="mt-2">
                           <p className="text-xs text-blue-700 font-medium">Common examples:</p>
                           <div className="flex flex-wrap gap-1 mt-1">
                             {selectedCategory.examples.map((example, index) => (
-                              <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+                              <span key={index} className="px-2 py-0.5 sm:py-1 bg-blue-100 text-blue-800 text-xs rounded">
                                 {example}
                               </span>
                             ))}
@@ -672,32 +671,32 @@ export default function WasteUpload() {
 
             {/* Step 2: Item Details */}
             {currentStep === 2 && (
-              <div className="space-y-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="space-y-6 sm:space-y-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                   {/* Condition */}
                   <div>
-                    <label className="block text-lg font-semibold text-gray-900 mb-4">
+                    <label className="block text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
                       Item Condition *
                     </label>
-                    <div className="space-y-3">
+                    <div className="space-y-2 sm:space-y-3">
                       {conditions.map(condition => (
                         <button
                           key={condition.value}
                           type="button"
                           onClick={() => setFormData(prev => ({ ...prev, condition: condition.value }))}
-                          className={`w-full p-4 rounded-xl border-2 text-left transition-all ${
+                          className={`w-full p-3 sm:p-4 rounded-xl border-2 text-left transition-all ${
                             formData.condition === condition.value
                               ? 'border-green-500 bg-green-50'
                               : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                           }`}
                         >
-                          <div className="flex items-center space-x-3">
-                            <span className="text-xl">{condition.icon}</span>
-                            <div>
-                              <div className={`font-semibold ${condition.color}`}>
+                          <div className="flex items-center space-x-2 sm:space-x-3">
+                            <span className="text-lg sm:text-xl flex-shrink-0" role="img" aria-label={condition.value}>{condition.icon}</span>
+                            <div className="flex-1 min-w-0">
+                              <div className={`font-semibold text-sm sm:text-base ${condition.color} truncate`}>
                                 {condition.value}
                               </div>
-                              <div className="text-sm text-gray-600">
+                              <div className="text-xs sm:text-sm text-gray-600 line-clamp-1">
                                 {condition.description}
                               </div>
                             </div>
@@ -708,7 +707,7 @@ export default function WasteUpload() {
                   </div>
 
                   {/* Additional Details */}
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     <div>
                       <label htmlFor="quantity" className="block text-sm font-semibold text-gray-900 mb-2">
                         Quantity
@@ -720,7 +719,7 @@ export default function WasteUpload() {
                         min="1"
                         value={formData.quantity}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-full px-3 py-2 sm:px-4 sm:py-3 text-base sm:text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
                       />
                     </div>
 
@@ -734,7 +733,7 @@ export default function WasteUpload() {
                         name="dimensions"
                         value={formData.dimensions}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-full px-3 py-2 sm:px-4 sm:py-3 text-base sm:text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
                         placeholder="e.g., 30cm x 20cm x 15cm"
                       />
                     </div>
@@ -749,8 +748,8 @@ export default function WasteUpload() {
                         name="weight"
                         value={formData.weight}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
-                        placeholder="e.g., 500g, 2kg, Light, Heavy"
+                        className="w-full px-3 py-2 sm:px-4 sm:py-3 text-base sm:text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="e.g., 500g, 2kg"
                       />
                     </div>
 
@@ -764,8 +763,8 @@ export default function WasteUpload() {
                         name="color"
                         value={formData.color}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
-                        placeholder="e.g., Blue, Red, Transparent"
+                        className="w-full px-3 py-2 sm:px-4 sm:py-3 text-base sm:text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="e.g., Blue, Red"
                       />
                     </div>
 
@@ -779,8 +778,8 @@ export default function WasteUpload() {
                         name="material"
                         value={formData.material}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
-                        placeholder="e.g., PET plastic, Cotton, Oak wood"
+                        className="w-full px-3 py-2 sm:px-4 sm:py-3 text-base sm:text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="e.g., PET plastic, Cotton"
                       />
                     </div>
                   </div>
@@ -790,17 +789,17 @@ export default function WasteUpload() {
 
             {/* Step 3: Image & Location */}
             {currentStep === 3 && (
-              <div className="space-y-8">
+              <div className="space-y-6 sm:space-y-8">
                 {/* Image Upload */}
                 <div>
-                  <label className="block text-lg font-semibold text-gray-900 mb-4">
-                    Upload Image (Recommended for better AI suggestions)
+                  <label className="block text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
+                    Upload Image (Recommended)
                   </label>
                   
                   <div
-                    className={`relative border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-300 ${
+                    className={`relative border-2 border-dashed rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 text-center transition-all duration-300 ${
                       dragActive
-                        ? 'border-green-500 bg-green-50 scale-105'
+                        ? 'border-green-500 bg-green-50'
                         : imagePreview
                         ? 'border-green-300 bg-green-50'
                         : 'border-gray-300 hover:border-green-400 hover:bg-gray-50'
@@ -815,49 +814,50 @@ export default function WasteUpload() {
                         <img 
                           src={imagePreview} 
                           alt="Preview" 
-                          className="max-h-80 mx-auto rounded-xl shadow-lg"
+                          className="max-h-60 sm:max-h-80 mx-auto rounded-xl shadow-lg w-full"
                         />
                         <button
                           type="button"
                           onClick={removeImage}
-                          className="absolute -top-3 -right-3 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors shadow-lg"
+                          className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-red-500 text-white rounded-full p-1 sm:p-1.5 md:p-2 hover:bg-red-600 transition-colors shadow-lg"
                         >
-                          <X className="h-5 w-5" />
+                          <X className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5" />
                         </button>
-                        <div className="mt-6 text-gray-600">
+                        <div className="mt-3 sm:mt-4 md:mt-6 text-gray-600">
                           {uploadSuccess ? (
                             <>
-                              <p className="font-medium text-green-600 flex items-center justify-center">
-                                <CheckCircle className="h-5 w-5 mr-2" />
-                                Image uploaded successfully!
+                              <p className="font-medium text-green-600 flex items-center justify-center text-xs sm:text-sm md:text-base">
+                                <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 mr-1 sm:mr-2" />
+                                <span className="hidden sm:inline">Image uploaded successfully!</span>
+                                <span className="sm:hidden">Uploaded!</span>
                               </p>
-                              <p className="text-sm mt-2">Click to change image or drag a new one here</p>
+                              <p className="text-xs sm:text-sm mt-1 sm:mt-2">Click to change image</p>
                             </>
                           ) : (
                             <>
-                              <p className="font-medium">Image preview ready</p>
-                              <p className="text-sm">Click to change image or drag a new one here</p>
+                              <p className="font-medium text-xs sm:text-sm md:text-base">Image preview ready</p>
+                              <p className="text-xs sm:text-sm mt-1">Click to change</p>
                             </>
                           )}
                         </div>
                       </div>
                     ) : (
                       <div>
-                        <div className="mx-auto w-20 h-20 bg-gradient-to-r from-green-100 to-blue-100 rounded-full flex items-center justify-center mb-6">
-                          <ImageIcon className="h-10 w-10 text-green-600" />
+                        <div className="mx-auto w-14 h-14 sm:w-18 sm:h-18 md:w-20 md:h-20 bg-gradient-to-r from-green-100 to-blue-100 rounded-full flex items-center justify-center mb-3 sm:mb-4 md:mb-6">
+                          <ImageIcon className="h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 text-green-600" />
                         </div>
-                        <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                          Drop your image here, or click to browse
+                        <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-gray-900 mb-2 sm:mb-3">
+                          Drop image or click to browse
                         </h3>
-                        <p className="text-gray-500 mb-6">
-                          PNG, JPG, GIF up to 10MB • Images help our AI provide better suggestions
+                        <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4 md:mb-6">
+                          PNG, JPG, GIF up to 10MB
                         </p>
                         <button
                           type="button"
                           onClick={() => fileInputRef.current?.click()}
-                          className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-xl hover:from-green-700 hover:to-blue-700 transition-all shadow-lg"
+                          className="inline-flex items-center px-3 py-2 sm:px-4 sm:py-2.5 md:px-6 md:py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-xl hover:from-green-700 hover:to-blue-700 transition-all shadow-lg text-xs sm:text-sm md:text-base"
                         >
-                          <Camera className="h-5 w-5 mr-2" />
+                          <Camera className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 mr-1.5 sm:mr-2" />
                           Choose File
                         </button>
                       </div>
@@ -873,8 +873,8 @@ export default function WasteUpload() {
                   </div>
                   
                   {errors.image && (
-                    <p className="mt-3 text-sm text-red-600 flex items-center">
-                      <AlertCircle className="h-4 w-4 mr-1" />
+                    <p className="mt-2 sm:mt-3 text-xs sm:text-sm text-red-600 flex items-center">
+                      <AlertCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                       {errors.image}
                     </p>
                   )}
@@ -882,7 +882,7 @@ export default function WasteUpload() {
 
                 {/* Location */}
                 <div>
-                  <label htmlFor="location" className="block text-lg font-semibold text-gray-900 mb-3">
+                  <label htmlFor="location" className="block text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">
                     Location (Optional)
                   </label>
                   <input
@@ -891,12 +891,12 @@ export default function WasteUpload() {
                     name="location"
                     value={formData.location}
                     onChange={handleChange}
-                    className="w-full px-4 py-4 text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="e.g., New York, NY or your city"
+                    className="w-full px-3 py-3 sm:px-4 sm:py-4 text-base sm:text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="e.g., New York, NY"
                   />
-                  <p className="mt-2 text-sm text-gray-500 flex items-center">
-                    <Info className="h-4 w-4 mr-1" />
-                    This helps others find your items in the marketplace and provides location-specific suggestions
+                  <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-gray-500 flex items-start">
+                    <Info className="h-3 w-3 mr-1 flex-shrink-0 mt-0.5" />
+                    <span>Helps others find your items in the marketplace</span>
                   </p>
                 </div>
               </div>
@@ -905,9 +905,9 @@ export default function WasteUpload() {
             {/* Step 4: Review & Submit */}
             {currentStep === 4 && (
               <div className="space-y-8">
-                <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                    <Eye className="h-6 w-6 mr-2 text-green-600" />
+                <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-4 sm:p-6">
+                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-3 sm:mb-4 flex items-center">
+                    <Eye className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 mr-2 text-green-600" />
                     Review Your Information
                   </h3>
                   
@@ -921,16 +921,16 @@ export default function WasteUpload() {
                       <div>
                         <h4 className="font-semibold text-gray-900">Category</h4>
                         <div className="flex items-center space-x-2">
-                          <span className="text-lg">{selectedCategory?.icon}</span>
-                          <span className="text-gray-700">{formData.category}</span>
+                          <span className="text-base sm:text-lg" role="img" aria-label={formData.category}>{selectedCategory?.icon}</span>
+                          <span className="text-sm sm:text-base text-gray-700">{formData.category}</span>
                         </div>
                       </div>
                       
                       <div>
                         <h4 className="font-semibold text-gray-900">Condition</h4>
                         <div className="flex items-center space-x-2">
-                          <span>{conditions.find(c => c.value === formData.condition)?.icon}</span>
-                          <span className="text-gray-700">{formData.condition}</span>
+                          <span className="text-base sm:text-lg" role="img" aria-label={formData.condition}>{conditions.find(c => c.value === formData.condition)?.icon}</span>
+                          <span className="text-sm sm:text-base text-gray-700">{formData.condition}</span>
                         </div>
                       </div>
                       
@@ -975,35 +975,35 @@ export default function WasteUpload() {
                 </div>
 
                 {/* What happens next */}
-                <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6">
-                  <h4 className="font-semibold text-blue-900 mb-3 flex items-center">
-                    <Sparkles className="h-5 w-5 mr-2" />
+                <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 sm:p-6">
+                  <h4 className="font-semibold text-sm sm:text-base text-blue-900 mb-2 sm:mb-3 flex items-center">
+                    <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                     What happens after you submit?
                   </h4>
-                  <div className="space-y-3 text-sm text-blue-800">
-                    <div className="flex items-start space-x-3">
-                      <div className="bg-blue-200 rounded-full p-1 mt-0.5">
-                        <Zap className="h-3 w-3" />
+                  <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm text-blue-800">
+                    <div className="flex items-start space-x-2 sm:space-x-3">
+                      <div className="bg-blue-200 rounded-full p-0.5 sm:p-1 mt-0.5 flex-shrink-0">
+                        <Zap className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                       </div>
-                      <p>Our AI analyzes your item details and image to understand the material and condition</p>
+                      <p className="flex-1">Our AI analyzes your item details and image to understand the material and condition</p>
                     </div>
-                    <div className="flex items-start space-x-3">
-                      <div className="bg-blue-200 rounded-full p-1 mt-0.5">
-                        <Target className="h-3 w-3" />
+                    <div className="flex items-start space-x-2 sm:space-x-3">
+                      <div className="bg-blue-200 rounded-full p-0.5 sm:p-1 mt-0.5 flex-shrink-0">
+                        <Target className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                       </div>
-                      <p>Generate personalized upcycling suggestions with step-by-step instructions</p>
+                      <p className="flex-1">Generate personalized upcycling suggestions with step-by-step instructions</p>
                     </div>
-                    <div className="flex items-start space-x-3">
-                      <div className="bg-blue-200 rounded-full p-1 mt-0.5">
-                        <BookOpen className="h-3 w-3" />
+                    <div className="flex items-start space-x-2 sm:space-x-3">
+                      <div className="bg-blue-200 rounded-full p-0.5 sm:p-1 mt-0.5 flex-shrink-0">
+                        <BookOpen className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                       </div>
-                      <p>Provide tool lists, material requirements, and difficulty levels for each project</p>
+                      <p className="flex-1">Provide tool lists, material requirements, and difficulty levels for each project</p>
                     </div>
-                    <div className="flex items-start space-x-3">
-                      <div className="bg-blue-200 rounded-full p-1 mt-0.5">
-                        <Play className="h-3 w-3" />
+                    <div className="flex items-start space-x-2 sm:space-x-3">
+                      <div className="bg-blue-200 rounded-full p-0.5 sm:p-1 mt-0.5 flex-shrink-0">
+                        <Play className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                       </div>
-                      <p>Link to relevant YouTube tutorials and additional resources</p>
+                      <p className="flex-1">Link to relevant YouTube tutorials and additional resources</p>
                     </div>
                   </div>
                 </div>
@@ -1012,57 +1012,57 @@ export default function WasteUpload() {
 
             {/* Step 5: AI Suggestions */}
             {currentStep === 5 && (
-              <div className="space-y-8">
-                <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-6">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                    <Sparkles className="h-7 w-7 mr-3 text-green-600" />
+              <div className="space-y-6 sm:space-y-8">
+                <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-4 sm:p-6">
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-4 sm:mb-6 flex items-center">
+                    <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 mr-2 sm:mr-3 text-green-600" />
                     AI-Powered Upcycling Suggestions
                   </h3>
                   
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                     {suggestions.map(suggestion => (
                       <div 
                         key={suggestion.id}
                         className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow"
                       >
-                        <div className="bg-gradient-to-r from-green-500 to-blue-500 px-6 py-4">
-                          <h4 className="text-xl font-bold text-white mb-1">{suggestion.title}</h4>
-                          <div className="flex items-center space-x-4">
-                            <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm">
+                        <div className="bg-gradient-to-r from-green-500 to-blue-500 px-4 py-3 sm:px-6 sm:py-4">
+                          <h4 className="text-base sm:text-lg md:text-xl font-bold text-white mb-1 sm:mb-2">{suggestion.title}</h4>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="bg-white/20 text-white px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm">
                               {suggestion.difficulty}
                             </span>
-                            <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm">
+                            <span className="bg-white/20 text-white px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm">
                               {suggestion.timeRequired}
                             </span>
-                            <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm">
+                            <span className="bg-white/20 text-white px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm">
                               {suggestion.estimatedCost}
                             </span>
                           </div>
                         </div>
                         
-                        <div className="p-6 space-y-4">
+                        <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
                           <p className="text-gray-700">{suggestion.description}</p>
                           
                           {/* Tools and Materials */}
-                          <div className="grid grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <div>
-                              <h5 className="font-semibold text-gray-900 mb-2">Tools Needed:</h5>
+                              <h5 className="font-semibold text-xs sm:text-sm md:text-base text-gray-900 mb-2">Tools Needed:</h5>
                               <ul className="space-y-1">
                                 {suggestion.tools.map((tool, index) => (
-                                  <li key={index} className="text-gray-600 text-sm flex items-center">
-                                    <Wrench className="h-4 w-4 mr-2 text-gray-400" />
-                                    {tool}
+                                  <li key={index} className="text-gray-600 text-xs sm:text-sm flex items-center">
+                                    <Wrench className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-gray-400 flex-shrink-0" />
+                                    <span className="flex-1 min-w-0 line-clamp-1">{tool}</span>
                                   </li>
                                 ))}
                               </ul>
                             </div>
                             <div>
-                              <h5 className="font-semibold text-gray-900 mb-2">Materials:</h5>
+                              <h5 className="font-semibold text-xs sm:text-sm md:text-base text-gray-900 mb-2">Materials:</h5>
                               <ul className="space-y-1">
                                 {suggestion.materials.map((material, index) => (
-                                  <li key={index} className="text-gray-600 text-sm flex items-center">
-                                    <Package className="h-4 w-4 mr-2 text-gray-400" />
-                                    {material}
+                                  <li key={index} className="text-gray-600 text-xs sm:text-sm flex items-center">
+                                    <Package className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-gray-400 flex-shrink-0" />
+                                    <span className="flex-1 min-w-0 line-clamp-1">{material}</span>
                                   </li>
                                 ))}
                               </ul>
@@ -1071,68 +1071,68 @@ export default function WasteUpload() {
                           
                           {/* Steps */}
                           <div>
-                            <h5 className="font-semibold text-gray-900 mb-2">Steps:</h5>
-                            <ol className="space-y-2">
+                            <h5 className="font-semibold text-xs sm:text-sm md:text-base text-gray-900 mb-2">Steps:</h5>
+                            <ol className="space-y-1.5 sm:space-y-2">
                               {suggestion.steps.map((step, index) => (
                                 <li key={index} className="flex items-start">
-                                  <span className="bg-green-100 text-green-700 rounded-full w-5 h-5 flex items-center justify-center text-xs font-medium mr-2 mt-0.5">
+                                  <span className="bg-green-100 text-green-700 rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center text-xs font-medium mr-2 mt-0.5 flex-shrink-0">
                                     {index + 1}
                                   </span>
-                                  <span className="text-gray-600 text-sm">{step}</span>
+                                  <span className="text-gray-600 text-xs sm:text-sm flex-1">{step}</span>
                                 </li>
                               ))}
                             </ol>
                           </div>
                           
                           {/* Safety Tips */}
-                          <div className="bg-yellow-50 rounded-lg p-4">
-                            <h5 className="font-semibold text-yellow-800 mb-2 flex items-center">
-                              <AlertTriangle className="h-4 w-4 mr-2" />
+                          <div className="bg-yellow-50 rounded-lg p-3 sm:p-4">
+                            <h5 className="font-semibold text-yellow-800 mb-1.5 sm:mb-2 flex items-center text-xs sm:text-sm md:text-base">
+                              <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
                               Safety Tips:
                             </h5>
                             <ul className="space-y-1">
                               {suggestion.safetyTips.map((tip, index) => (
-                                <li key={index} className="text-yellow-700 text-sm flex items-start">
-                                  <span className="mr-2">•</span>
-                                  {tip}
+                                <li key={index} className="text-yellow-700 text-xs sm:text-sm flex items-start">
+                                  <span className="mr-1.5 sm:mr-2 flex-shrink-0">•</span>
+                                  <span className="flex-1">{tip}</span>
                                 </li>
                               ))}
                             </ul>
                           </div>
                           
                           {/* Eco Impact */}
-                          <div className="bg-green-50 rounded-lg p-4">
-                            <h5 className="font-semibold text-green-800 mb-2 flex items-center">
-                              <Leaf className="h-4 w-4 mr-2" />
+                          <div className="bg-green-50 rounded-lg p-3 sm:p-4">
+                            <h5 className="font-semibold text-green-800 mb-1.5 sm:mb-2 flex items-center text-xs sm:text-sm md:text-base">
+                              <Leaf className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
                               Environmental Impact:
                             </h5>
-                            <div className="grid grid-cols-3 gap-2 text-center">
+                            <div className="grid grid-cols-3 gap-1.5 sm:gap-2 text-center">
                               <div>
-                                <div className="text-green-600 font-bold">{suggestion.ecoImpact.co2Saved}kg</div>
+                                <div className="text-green-600 font-bold text-xs sm:text-sm">{suggestion.ecoImpact.co2Saved}kg</div>
                                 <div className="text-green-700 text-xs">CO₂ Saved</div>
                               </div>
                               <div>
-                                <div className="text-green-600 font-bold">{suggestion.ecoImpact.wasteReduced}kg</div>
+                                <div className="text-green-600 font-bold text-xs sm:text-sm">{suggestion.ecoImpact.wasteReduced}kg</div>
                                 <div className="text-green-700 text-xs">Waste Reduced</div>
                               </div>
                               <div>
-                                <div className="text-green-600 font-bold">{suggestion.ecoImpact.energySaved}kWh</div>
+                                <div className="text-green-600 font-bold text-xs sm:text-sm">{suggestion.ecoImpact.energySaved}kWh</div>
                                 <div className="text-green-700 text-xs">Energy Saved</div>
                               </div>
                             </div>
                           </div>
                           
                           {/* Action Buttons */}
-                          <div className="flex gap-3">
+                          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                             {/* Video Tutorial Link */}
                             <a
                               href={`https://www.youtube.com/results?search_query=${encodeURIComponent(suggestion.videoSearchQuery)}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+                              className="inline-flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-xs sm:text-sm"
                             >
-                              <Play className="h-4 w-4 mr-2" />
-                              Watch Tutorial Videos
+                              <Play className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
+                              <span className="truncate">Watch Tutorial</span>
                             </a>
 
                             {/* Save Suggestion Button */}
@@ -1140,17 +1140,17 @@ export default function WasteUpload() {
                               type="button"
                               onClick={() => handleSaveSuggestion(suggestion)}
                               disabled={savingState[suggestion.id]}
-                              className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="inline-flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                               {savingState[suggestion.id] ? (
                                 <>
-                                  <Loader className="h-4 w-4 mr-2 animate-spin" />
-                                  Saving...
+                                  <Loader className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 animate-spin" />
+                                  <span>Saving...</span>
                                 </>
                               ) : (
                                 <>
-                                  <BookOpen className="h-4 w-4 mr-2" />
-                                  Save to My Projects
+                                  <BookOpen className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
+                                  <span className="truncate">Save to Projects</span>
                                 </>
                               )}
                             </button>
@@ -1165,31 +1165,31 @@ export default function WasteUpload() {
 
             {/* Submit Error */}
             {errors.submit && (
-              <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+              <div className="bg-red-50 border border-red-200 rounded-xl p-3 sm:p-4">
                 <div className="flex items-center">
-                  <AlertCircle className="h-5 w-5 text-red-600 mr-2" />
-                  <span className="text-red-800">{errors.submit}</span>
+                  <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-600 mr-2 flex-shrink-0" />
+                  <span className="text-xs sm:text-sm md:text-base text-red-800">{errors.submit}</span>
                 </div>
               </div>
             )}
 
             {/* Navigation Buttons */}
-            <div className="flex justify-between items-center pt-8 border-t border-gray-200">
+            <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-6 sm:pt-8 border-t border-gray-200">
               <button
                 type="button"
                 onClick={prevStep}
                 disabled={currentStep === 1}
-                className="px-6 py-3 text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                className="order-2 sm:order-1 px-4 py-2.5 sm:px-6 sm:py-3 text-xs sm:text-sm md:text-base text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               >
-                <ArrowRight className="h-4 w-4 mr-2 rotate-180" />
-                Previous
+                <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 mr-1.5 sm:mr-2 rotate-180" />
+                <span>Previous</span>
               </button>
 
-              <div className="flex space-x-3">
+              <div className="order-1 sm:order-2 flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
                 <button
                   type="button"
                   onClick={() => setShowPreview(!showPreview)}
-                  className="px-4 py-3 text-green-600 bg-green-50 rounded-xl hover:bg-green-100 transition-colors font-medium flex items-center"
+                  className="px-4 py-2.5 text-sm sm:text-base text-green-600 bg-green-50 rounded-xl hover:bg-green-100 transition-colors font-medium flex items-center justify-center"
                 >
                   <Eye className="h-4 w-4 mr-2" />
                   {showPreview ? 'Hide' : 'Preview'}
@@ -1199,27 +1199,29 @@ export default function WasteUpload() {
                   <button
                     type="button"
                     onClick={nextStep}
-                    className="px-8 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-xl hover:from-green-700 hover:to-blue-700 transition-all font-medium flex items-center shadow-lg"
+                    className="px-5 py-2.5 sm:px-7 md:px-8 sm:py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-xl hover:from-green-700 hover:to-blue-700 transition-all font-medium flex items-center justify-center shadow-lg text-xs sm:text-sm md:text-base"
                   >
-                    Next
-                    <ArrowRight className="h-4 w-4 ml-2" />
+                    <span>Next</span>
+                    <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 ml-1.5 sm:ml-2" />
                   </button>
                 ) : (
                   <button
                     type="submit"
                     disabled={loading}
-                    className="px-8 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-xl hover:from-green-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium flex items-center shadow-lg"
+                    className="px-5 py-2.5 sm:px-7 md:px-8 sm:py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-xl hover:from-green-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium flex items-center justify-center shadow-lg text-xs sm:text-sm md:text-base"
                   >
                     {loading ? (
                       <>
-                        <Loader className="h-5 w-5 mr-2 animate-spin" />
-                        Processing...
+                        <Loader className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 mr-1.5 sm:mr-2 animate-spin" />
+                        <span className="hidden sm:inline">Processing...</span>
+                        <span className="sm:hidden">Processing</span>
                       </>
                     ) : (
                       <>
-                        <Upload className="h-5 w-5 mr-2" />
-                        Submit Item
-                        <Sparkles className="h-4 w-4 ml-2" />
+                        <Upload className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 mr-1.5 sm:mr-2" />
+                        <span className="hidden sm:inline">Submit Item</span>
+                        <span className="sm:hidden">Submit</span>
+                        <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-4 md:w-4 ml-1.5 sm:ml-2 hidden sm:inline" />
                       </>
                     )}
                   </button>
@@ -1231,9 +1233,9 @@ export default function WasteUpload() {
 
         {/* Preview Panel */}
         {showPreview && (
-          <div className="mt-8 bg-white rounded-2xl shadow-xl p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Live Preview</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="mt-6 sm:mt-8 bg-white rounded-2xl shadow-xl p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-3 sm:mb-4">Live Preview</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <h4 className="font-semibold text-gray-900 mb-2">Current Information</h4>
                 <div className="space-y-2 text-sm">
@@ -1255,49 +1257,49 @@ export default function WasteUpload() {
         )}
 
         {/* Help Section */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-xl p-6 shadow-lg">
+        <div className="mt-6 sm:mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg">
             <div className="flex items-start">
-              <div className="bg-yellow-100 rounded-full p-3 mr-4">
-                <Lightbulb className="h-6 w-6 text-yellow-600" />
+              <div className="bg-yellow-100 rounded-full p-2.5 sm:p-3 mr-3 sm:mr-4 flex-shrink-0">
+                <Lightbulb className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-600" />
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 mb-1 sm:mb-2">
                   AI-Powered Analysis
                 </h3>
-                <p className="text-gray-600 text-sm">
+                <p className="text-gray-600 text-xs sm:text-sm">
                   Our advanced AI analyzes your waste item details and image to provide personalized upcycling suggestions with detailed step-by-step instructions.
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow-lg">
+          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg">
             <div className="flex items-start">
-              <div className="bg-green-100 rounded-full p-3 mr-4">
-                <BookOpen className="h-6 w-6 text-green-600" />
+              <div className="bg-green-100 rounded-full p-2.5 sm:p-3 mr-3 sm:mr-4 flex-shrink-0">
+                <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 mb-1 sm:mb-2">
                   Detailed Instructions
                 </h3>
-                <p className="text-gray-600 text-sm">
+                <p className="text-gray-600 text-xs sm:text-sm">
                   Get comprehensive project guides including required tools, materials, time estimates, and difficulty levels for each suggestion.
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow-lg">
+          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg">
             <div className="flex items-start">
-              <div className="bg-blue-100 rounded-full p-3 mr-4">
-                <Play className="h-6 w-6 text-blue-600" />
+              <div className="bg-blue-100 rounded-full p-2.5 sm:p-3 mr-3 sm:mr-4 flex-shrink-0">
+                <Play className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 mb-1 sm:mb-2">
                   Video Tutorials
                 </h3>
-                <p className="text-gray-600 text-sm">
+                <p className="text-gray-600 text-xs sm:text-sm">
                   Access curated YouTube tutorials and additional resources to help you complete your upcycling projects successfully.
                 </p>
               </div>
