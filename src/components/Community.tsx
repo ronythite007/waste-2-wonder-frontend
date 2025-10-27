@@ -139,15 +139,18 @@ export default function Community() {
     e.preventDefault();
     if (!user) return;
 
+    // Convert tags string to array
+    const tagsArray = newPost.tags.split(',').map(tag => tag.trim()).filter(tag => tag);
+
     const postData = {
-      ...newPost,
-      user_id: user.id,
-      author: {
-        name: user.name,
-        avatar: user.avatar || '',
-        role: user.role
-      },
-      tags: newPost.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+      title: newPost.title,
+      description: newPost.description,
+      category: newPost.category,
+      materials: newPost.materials || '',
+      time_spent: newPost.timeSpent || '',
+      difficulty: newPost.difficulty,
+      tags: tagsArray,
+      tips: newPost.tips || '',
       image: newPost.image || 'https://images.pexels.com/photos/1029604/pexels-photo-1029604.jpeg?auto=compress&cs=tinysrgb&w=500'
     };
 
@@ -185,19 +188,17 @@ export default function Community() {
     likePost(postId, user.id);
   };
 
-  const handleComment = (postId: string) => {
+  const handleComment = async (postId: string) => {
     if (!user || !newComment.trim()) return;
     
-    addComment(postId, {
-      user_id: user.id,
-      author: {
-        name: user.name,
-        avatar: user.avatar || ''
-      },
+    await addComment(postId, {
       content: newComment.trim()
     });
     
     setNewComment('');
+    
+    // Optionally show a success message
+    // You can add a toast notification here if desired
   };
 
   const handleBookmark = (postId: string) => {
@@ -212,7 +213,7 @@ export default function Community() {
       image: post.image,
       category: post.category,
       materials: post.materials || '',
-      timeSpent: post.timeSpent || '',
+      timeSpent: post.time_spent || '',
       difficulty: post.difficulty || 'Easy',
       tags: post.tags?.join(', ') || '',
       tips: post.tips || ''
@@ -243,7 +244,7 @@ export default function Community() {
           return b.comments.length - a.comments.length;
         case 'recent':
         default:
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       }
     });
 
@@ -280,8 +281,8 @@ export default function Community() {
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
               Community Showcase
             </h1>
-            <p className="text-sm sm:text-base lg:text-lg text-gray-600 max-w-2xl mx-auto">
-              Share your amazing waste2wonder transformations and get inspired by others
+            <p className="text-sm sm:text-base lg:text-lg text-gray-600 max-w-2xl mx-auto flex items-center justify-center gap-2">
+              🌍 Global Feed • Share your creations • Get inspired by others
             </p>
           </div>
           
@@ -422,7 +423,7 @@ export default function Community() {
                         <Star className="h-4 w-4 text-yellow-500 fill-current flex-shrink-0" />
                       )}
                     </div>
-                    <span className="text-xs sm:text-sm text-gray-500">{formatTimeAgo(post.createdAt)}</span>
+                    <span className="text-xs sm:text-sm text-gray-500">{formatTimeAgo(post.created_at)}</span>
                   </div>
                 </div>
 
@@ -811,18 +812,18 @@ export default function Community() {
                   {selectedPost.comments.map((comment: any) => (
                     <div key={comment.id} className="flex space-x-3">
                       <img
-                        src={comment.author.avatar}
-                        alt={comment.author.name}
+                        src={comment.author?.avatar || comment.profiles?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${comment.author?.name || comment.profiles?.name || 'default'}`}
+                        alt={comment.author?.name || comment.profiles?.name || 'User'}
                         className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex-shrink-0 ring-2 ring-gray-100"
                       />
                       <div className="flex-1">
                         <div className="bg-gray-50 rounded-2xl p-3 sm:p-4">
                           <div className="flex items-center space-x-2 mb-1">
                             <span className="font-semibold text-sm sm:text-base text-gray-900">
-                              {comment.author.name}
+                              {comment.author?.name || comment.profiles?.name || 'User'}
                             </span>
                             <span className="text-xs text-gray-500">
-                              {formatTimeAgo(comment.createdAt)}
+                              {formatTimeAgo(comment.created_at)}
                             </span>
                           </div>
                           <p className="text-sm sm:text-base text-gray-700 leading-relaxed">{comment.content}</p>
@@ -844,8 +845,8 @@ export default function Community() {
               <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 sm:p-6 rounded-b-2xl">
                 <div className="flex space-x-3">
                   <img
-                    src={user?.avatar}
-                    alt={user?.name}
+                    src={user?.profile?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.email || 'default'}`}
+                    alt={user?.profile?.name || user?.email || 'You'}
                     className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex-shrink-0 ring-2 ring-blue-100"
                   />
                   <div className="flex-1 flex space-x-2">

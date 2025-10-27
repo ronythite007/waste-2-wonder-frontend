@@ -60,7 +60,9 @@ export function MarketplaceProvider({ children }: { children: React.ReactNode })
       }
 
       // Transform data to include seller info
-      const transformedProducts = (data || []).map(product => ({
+      // Filter out invalid products and transform data
+      const validProducts = (data || []).filter(product => product && product.user_id);
+      const transformedProducts = validProducts.map(product => ({
         ...product,
         seller_info: {
           name: product.profiles?.name || 'Unknown',

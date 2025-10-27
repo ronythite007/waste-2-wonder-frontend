@@ -18,6 +18,7 @@ import {
   AlertCircle,
   Clock,
   User,
+  Users,
   Package,
   Truck,
   Shield,
@@ -161,7 +162,10 @@ export default function EnhancedMarketplace() {
     }));
   };
 
-  const filteredProducts = enhancedProducts.filter(product => {
+  // Filter out products without valid data or corrupted images
+  const validProducts = enhancedProducts.filter(product => product && product.title && product.user_id);
+  
+  const filteredProducts = validProducts.filter(product => {
     const matchesSearch = product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          product.tags?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -303,9 +307,12 @@ export default function EnhancedMarketplace() {
               Discover amazing upcycled creations from our community of makers
             </p>
             <div className="flex items-center space-x-6 mt-2 text-sm text-gray-500">
-              <span>{filteredProducts.length} products available</span>
+              <span className="flex items-center gap-1">
+                <Users className="h-4 w-4" />
+                {filteredProducts.length} products from all users
+              </span>
               <span>•</span>
-              <span>Trusted sellers</span>
+              <span>🌍 Global Community</span>
               <span>•</span>
               <span>Secure transactions</span>
             </div>

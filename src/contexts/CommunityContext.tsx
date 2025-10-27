@@ -3,10 +3,24 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from './AuthContext';
 import type { CommunityPost, PostComment, Profile } from '../lib/supabase';
 
+interface Author {
+  name: string;
+  avatar: string;
+  role: string;
+}
+
+interface ExtendedCommunityPost extends Omit<CommunityPost, 'profiles' | 'post_likes' | 'post_comments' | 'post_bookmarks'> {
+  author: Author;
+  likes: string[];
+  comments: any[];
+  bookmarks: string[];
+  createdAt?: string;
+}
+
 interface CommunityContextType {
-  posts: CommunityPost[];
+  posts: ExtendedCommunityPost[];
   loading: boolean;
-  addPost: (post: Omit<CommunityPost, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'profiles' | 'post_likes' | 'post_comments' | 'post_bookmarks'>) => Promise<CommunityPost | null>;
+  addPost: (post: Omit<CommunityPost, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'profiles' | 'post_likes' | 'post_comments' | 'post_bookmarks'>) => Promise<ExtendedCommunityPost | null>;
   updatePost: (id: string, post: Omit<CommunityPost, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'profiles' | 'post_likes' | 'post_comments' | 'post_bookmarks'>) => Promise<boolean>;
   deletePost: (id: string) => Promise<boolean>;
   likePost: (postId: string, userId: string) => Promise<void>;
@@ -27,7 +41,7 @@ export function useCommunity() {
 
 export function CommunityProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
-  const [posts, setPosts] = useState<CommunityPost[]>([]);
+  const [posts, setPosts] = useState<ExtendedCommunityPost[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -76,7 +90,25 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      setPosts(data || []);
+      // Filter out any null/invalid posts and transform profiles to author
+      const validPosts = (data || []).filter(post => post && post.user_id).map(post => ({
+        ...post,
+        author: {
+          name: post.profiles?.name || 'Unknown User',
+          avatar: post.profiles?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${post.profiles?.email || 'default'}`,
+          role: post.profiles?.role || 'user'
+        },
+        likes: post.post_likes?.map((like: any) => like.user_id) || [],
+        comments: (post.post_comments || []).map((comment: any) => ({
+          ...comment,
+          author: {
+            name: comment.profiles?.name || 'Unknown User',
+            avatar: comment.profiles?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${comment.profiles?.name || 'default'}`
+          }
+        })),
+        bookmarks: post.post_bookmarks?.map((bookmark: any) => bookmark.user_id) || []
+      }));
+      setPosts(validPosts);
     } catch (error) {
       console.error('Error fetching posts:', error);
     } finally {
@@ -84,14 +116,22 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const addPost = async (postData: Omit<CommunityPost, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'profiles' | 'post_likes' | 'post_comments' | 'post_bookmarks'>): Promise<CommunityPost | null> => {
+  const addPost = async (postData: Omit<CommunityPost, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'profiles' | 'post_likes' | 'post_comments' | 'post_bookmarks'>): Promise<ExtendedCommunityPost | null> => {
     if (!user) return null;
 
     try {
       const { data, error } = await supabase
         .from('community_posts')
         .insert([{
-          ...postData,
+          title: postData.title,
+          description: postData.description,
+          image: postData.image,
+          category: postData.category,
+          materials: postData.materials,
+          time_spent: postData.timeSpent,
+          difficulty: postData.difficulty,
+          tags: postData.tags,
+          tips: postData.tips,
           user_id: user.id,
         }])
         .select(`
@@ -127,8 +167,21 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
         return null;
       }
 
-      setPosts(prev => [data, ...prev]);
-      return data;
+      // Transform the post with author info
+      const transformedPost: ExtendedCommunityPost = {
+        ...data,
+        author: {
+          name: data.profiles?.name || user.profile?.name || 'Unknown User',
+          avatar: data.profiles?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.profiles?.email || user.email || 'default'}`,
+          role: data.profiles?.role || user.profile?.role || 'user'
+        },
+        likes: data.post_likes?.map((like: any) => like.user_id) || [],
+        comments: data.post_comments || [],
+        bookmarks: data.post_bookmarks?.map((bookmark: any) => bookmark.user_id) || []
+      };
+
+      setPosts(prev => [transformedPost, ...prev]);
+      return transformedPost;
     } catch (error) {
       console.error('Error adding post:', error);
       return null;
@@ -191,7 +244,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const post = posts.find(p => p.id === postId);
-      const isLiked = post?.post_likes?.some(like => like.user_id === userId);
+      const isLiked = post?.likes?.includes(userId) || false;
 
       if (isLiked) {
         // Unlike
@@ -220,12 +273,12 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
       // Update local state
       setPosts(prev => prev.map(post => {
         if (post.id === postId) {
-          const currentLikes = post.post_likes || [];
+          const currentLikes = post.likes || [];
           const newLikes = isLiked
-            ? currentLikes.filter(like => like.user_id !== userId)
-            : [...currentLikes, { user_id: userId }];
+            ? currentLikes.filter(id => id !== userId)
+            : [...currentLikes, userId];
           
-          return { ...post, post_likes: newLikes };
+          return { ...post, likes: newLikes };
         }
         return post;
       }));
@@ -260,13 +313,21 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      // Update local state
+      // Update local state with transformed comment
+      const transformedComment = {
+        ...data,
+        author: {
+          name: data.profiles?.name || 'Unknown User',
+          avatar: data.profiles?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.profiles?.name || 'default'}`
+        }
+      };
+
       setPosts(prev => prev.map(post => {
         if (post.id === postId) {
-          const currentComments = post.post_comments || [];
+          const currentComments = post.comments || [];
           return {
             ...post,
-            post_comments: [...currentComments, data]
+            comments: [...currentComments, transformedComment]
           };
         }
         return post;
@@ -281,7 +342,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const post = posts.find(p => p.id === postId);
-      const isBookmarked = post?.post_bookmarks?.some(bookmark => bookmark.user_id === userId);
+      const isBookmarked = post?.bookmarks?.includes(userId) || false;
 
       if (isBookmarked) {
         // Remove bookmark
@@ -310,12 +371,12 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
       // Update local state
       setPosts(prev => prev.map(post => {
         if (post.id === postId) {
-          const currentBookmarks = post.post_bookmarks || [];
+          const currentBookmarks = post.bookmarks || [];
           const newBookmarks = isBookmarked
-            ? currentBookmarks.filter(bookmark => bookmark.user_id !== userId)
-            : [...currentBookmarks, { user_id: userId }];
+            ? currentBookmarks.filter(id => id !== userId)
+            : [...currentBookmarks, userId];
           
-          return { ...post, post_bookmarks: newBookmarks };
+          return { ...post, bookmarks: newBookmarks };
         }
         return post;
       }));
