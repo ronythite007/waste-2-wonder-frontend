@@ -28,18 +28,16 @@ export default function Navbar() {
 
   const isActive = (path: string) => location.pathname === path;
 
-  const navLinks = [
-    { path: '/dashboard', icon: Home, label: 'Dashboard' },
-    { path: '/upload', icon: Upload, label: 'Upload' },
-    { path: '/suggestions', icon: Lightbulb, label: 'Suggestions' },
-    { path: '/marketplace', icon: ShoppingBag, label: 'Marketplace' },
-    { path: '/community', icon: Users, label: 'Community' },
-    { path: '/eco-tracker', icon: TreePine, label: 'Eco Tracker' },
-  ];
-
-  if (user?.profile?.role === 'admin') {
-    navLinks.push({ path: '/admin', icon: Settings, label: 'Admin' });
-  }
+  const navLinks = user?.profile?.role === 'admin' 
+    ? [{ path: '/admin', icon: Settings, label: 'Admin' }]
+    : [
+        { path: '/dashboard', icon: Home, label: 'Dashboard' },
+        { path: '/upload', icon: Upload, label: 'Upload' },
+        { path: '/suggestions', icon: Lightbulb, label: 'Suggestions' },
+        { path: '/marketplace', icon: ShoppingBag, label: 'Marketplace' },
+        { path: '/community', icon: Users, label: 'Community' },
+        { path: '/eco-tracker', icon: TreePine, label: 'Eco Tracker' },
+      ];
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -158,7 +156,7 @@ export default function Navbar() {
       {/* Mobile Navigation */}
       <div className="md:hidden border-t border-gray-200 bg-white fixed bottom-0 left-0 right-0 z-50" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <div className="max-w-7xl mx-auto px-2 flex justify-around py-2">
-          {navLinks.slice(0, 5).map((link) => (
+          {navLinks.map((link) => (
             <Link
               key={link.path}
               to={link.path}

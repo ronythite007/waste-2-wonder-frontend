@@ -37,7 +37,8 @@ import {
   SlidersHorizontal,
   ChevronDown,
   Image as ImageIcon,
-  StarIcon
+  StarIcon,
+  Send
 } from 'lucide-react';
 
 export default function EnhancedMarketplace() {
@@ -59,6 +60,9 @@ export default function EnhancedMarketplace() {
   const [productImageError, setProductImageError] = useState('');
   const [dragActive, setDragActive] = useState(false);
   const [productImages, setProductImages] = useState<string[]>([]);
+  const [newComment, setNewComment] = useState('');
+  const [productComments, setProductComments] = useState<Record<string, any[]>>({});
+  const [productLikes, setProductLikes] = useState<Record<string, string[]>>({});
   
 
   const [newProduct, setNewProduct] = useState({
@@ -108,16 +112,11 @@ export default function EnhancedMarketplace() {
     { value: 'popular', label: 'Most Popular' }
   ];
 
-  // Enhanced product data with ratings and reviews
+  // Add comments and likes to products
   const enhancedProducts = products.map(product => ({
     ...product,
-    rating: 4.2 + Math.random() * 0.8, // Mock rating between 4.2-5.0
-    reviewCount: Math.floor(Math.random() * 50) + 1,
-    views: Math.floor(Math.random() * 200) + 10,
-    likes: Math.floor(Math.random() * 30) + 1,
-    isVerifiedSeller: Math.random() > 0.3,
-    responseTime: Math.floor(Math.random() * 24) + 1 + ' hours',
-    shippingTime: Math.floor(Math.random() * 7) + 1 + ' days'
+    comments: productComments[product.id] || [],
+    likes: productLikes[product.id] || []
   }));
 
   const handleMultipleImageUpload = (files: FileList) => {
@@ -162,8 +161,7 @@ export default function EnhancedMarketplace() {
     }));
   };
 
-  // Filter out products without valid data or corrupted images
-  const validProducts = enhancedProducts.filter(product => product && product.title && product.user_id);
+  const validProducts = enhancedProducts.filter(product => product && product.title);
   
   const filteredProducts = validProducts.filter(product => {
     const matchesSearch = product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -204,9 +202,9 @@ export default function EnhancedMarketplace() {
       case 'price-high':
         return b.price - a.price;
       case 'rating':
-        return b.rating - a.rating;
+        return 0; // No rating data
       case 'popular':
-        return b.views - a.views;
+        return 0; // No view data
       case 'newest':
       default:
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
@@ -225,9 +223,7 @@ export default function EnhancedMarketplace() {
       seller_info: {
         name: user.profile?.name || user.email?.split('@')[0] || 'Unknown',
         avatar: user.profile?.avatar || '',
-        rating: 4.5,
-        joinDate: user.profile?.join_date || new Date().toISOString(),
-        totalSales: Math.floor(Math.random() * 50) + 1,
+        joinDate: user.profile?.created_at || new Date().toISOString(),
         isVerified: user.profile?.role === 'creator'
       }
     };
@@ -241,6 +237,54 @@ export default function EnhancedMarketplace() {
 
     resetForm();
     setShowAddProduct(false);
+  };
+
+  const handleProductComment = async (productId: string) => {
+    if (!user || !newComment.trim()) return;
+    
+    const comment = {
+      id: Date.now().toString(),
+      content: newComment.trim(),
+      user_id: user.id,
+      product_id: productId,
+      created_at: new Date().toISOString(),
+      author: {
+        name: user.profile?.name || user.email?.split('@')[0] || 'User',
+        avatar: user.profile?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`
+      }
+    };
+    
+    // Add comment to local state
+    setProductComments(prev => ({
+      ...prev,
+      [productId]: [...(prev[productId] || []), comment]
+    }));
+    
+    // Update the selected product's comments
+    if (selectedProduct && selectedProduct.id === productId) {
+      setSelectedProduct(prev => ({
+        ...prev,
+        comments: [...(prev.comments || []), comment]
+      }));
+    }
+    
+    setNewComment('');
+  };
+
+  const handleProductLike = (productId: string) => {
+    if (!user) return;
+    
+    setProductLikes(prev => {
+      const currentLikes = prev[productId] || [];
+      const isLiked = currentLikes.includes(user.id);
+      
+      return {
+        ...prev,
+        [productId]: isLiked 
+          ? currentLikes.filter(id => id !== user.id)
+          : [...currentLikes, user.id]
+      };
+    });
   };
 
   const resetForm = () => {
@@ -476,7 +520,7 @@ export default function EnhancedMarketplace() {
                 </div>
 
                 {/* Seller Verification Badge */}
-                {product.isVerifiedSeller && (
+                {product.seller_info?.isVerified && (
                   <div className="absolute top-3 left-3">
                     <div className="bg-blue-600 text-white rounded-full p-1">
                       <CheckCircle className="h-4 w-4" />
@@ -486,8 +530,13 @@ export default function EnhancedMarketplace() {
 
                 {/* Action Buttons */}
                 <div className="absolute bottom-3 left-3 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button className="p-2 bg-white rounded-full shadow-lg hover:bg-gray-50">
-                    <Heart className="h-4 w-4 text-gray-600" />
+                  <button 
+                    onClick={() => handleProductLike(product.id)}
+                    className={`p-2 bg-white rounded-full shadow-lg hover:bg-gray-50 transition-colors ${
+                      product.likes?.includes(user?.id || '') ? 'text-red-500' : 'text-gray-600'
+                    }`}
+                  >
+                    <Heart className={`h-4 w-4 ${product.likes?.includes(user?.id || '') ? 'fill-current' : ''}`} />
                   </button>
                   <button className="p-2 bg-white rounded-full shadow-lg hover:bg-gray-50">
                     <Share2 className="h-4 w-4 text-gray-600" />
@@ -514,33 +563,14 @@ export default function EnhancedMarketplace() {
                   </div>
                 </div>
 
-                {/* Rating and Reviews */}
-                <div className="flex items-center space-x-2 mb-3">
-                  <div className="flex items-center">
-                    {renderStars(product.rating)}
-                  </div>
-                  <span className="text-sm text-gray-600">
-                    {product.rating.toFixed(1)} ({product.reviewCount} reviews)
-                  </span>
-                </div>
+
                 
                 <p className="text-gray-600 text-sm mb-4 line-clamp-2">
                   {product.description}
                 </p>
 
-                {/* Product Stats */}
-                <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
-                  <div className="flex items-center space-x-4">
-                    <span className="flex items-center">
-                      <Eye className="h-3 w-3 mr-1" />
-                      {product.views}
-                    </span>
-                    <span className="flex items-center">
-                      <ThumbsUp className="h-3 w-3 mr-1" />
-                      {product.likes}
-                    </span>
-                  </div>
-                  <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full">
+                <div className="flex justify-end mb-4">
+                  <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">
                     {product.category}
                   </span>
                 </div>
@@ -548,21 +578,21 @@ export default function EnhancedMarketplace() {
                 {/* Seller Info */}
                 <div className="flex items-center space-x-3 mb-4">
                   <img
-                    src={product.seller_info?.avatar || ''}
+                    src={product.seller_info?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${product.seller_info?.name || 'user'}`}
                     alt={product.seller_info?.name}
                     className="w-8 h-8 rounded-full"
                   />
                   <div className="flex-1">
                     <div className="flex items-center space-x-1">
                       <span className="text-sm font-medium text-gray-900">
-                        {product.seller_info?.name}
+                        {product.seller_info?.name || 'Anonymous User'}
                       </span>
-                      {product.isVerifiedSeller && (
+                      {product.seller_info?.isVerified && (
                         <CheckCircle className="h-3 w-3 text-blue-500" />
                       )}
                     </div>
-                    <div className="flex items-center text-xs text-gray-500">
-                      <span>Responds in {product.responseTime}</span>
+                    <div className="text-xs text-gray-500">
+                      Member since {new Date(product.created_at).getFullYear()}
                     </div>
                   </div>
                 </div>
@@ -579,7 +609,14 @@ export default function EnhancedMarketplace() {
                     <Eye className="h-4 w-4 mr-1" />
                     View Details
                   </button>
-                  <button className="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                  <button 
+                    onClick={() => {
+                      setSelectedProduct(product);
+                      setShowProductDetail(true);
+                    }}
+                    className="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                    title="View comments"
+                  >
                     <MessageCircle className="h-4 w-4" />
                   </button>
                   <button className="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
@@ -624,6 +661,169 @@ export default function EnhancedMarketplace() {
               >
                 List Your First Item
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* Product Detail Modal with Comments */}
+        {showProductDetail && selectedProduct && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+              <div className="sticky top-0 bg-white border-b border-gray-200 p-6 rounded-t-2xl">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-2xl font-bold text-gray-900">{selectedProduct.title}</h2>
+                  <button
+                    onClick={() => {
+                      setShowProductDetail(false);
+                      setSelectedProduct(null);
+                    }}
+                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  >
+                    <X className="h-6 w-6" />
+                  </button>
+                </div>
+              </div>
+              
+              <div className="p-6 space-y-6">
+                {/* Product Image and Info */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <img
+                      src={selectedProduct.image}
+                      alt={selectedProduct.title}
+                      className="w-full h-64 object-cover rounded-xl"
+                    />
+                  </div>
+                  <div>
+                    <div className="flex items-center space-x-2 mb-3">
+                      <span className={`px-3 py-1 text-sm font-bold rounded-full ${
+                        selectedProduct.type === 'Sale' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                      }`}>
+                        {selectedProduct.type}
+                      </span>
+                      <span className={`px-3 py-1 text-sm font-bold rounded-full ${getConditionColor(selectedProduct.condition)}`}>
+                        {selectedProduct.condition}
+                      </span>
+                    </div>
+                    
+                    {selectedProduct.type === 'Sale' && (
+                      <div className="text-3xl font-bold text-green-600 mb-3">
+                        ${selectedProduct.price}
+                      </div>
+                    )}
+                    
+
+                    
+                    <p className="text-gray-700 mb-4">{selectedProduct.description}</p>
+                    
+                    {/* Seller Info */}
+                    <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-xl">
+                      <img
+                        src={selectedProduct.seller_info?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${selectedProduct.seller_info?.name || 'user'}`}
+                        alt={selectedProduct.seller_info?.name}
+                        className="w-12 h-12 rounded-full"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2">
+                          <span className="font-semibold text-gray-900">
+                            {selectedProduct.seller_info?.name || 'Anonymous User'}
+                          </span>
+                          {selectedProduct.seller_info?.isVerified && (
+                            <CheckCircle className="h-4 w-4 text-blue-500" />
+                          )}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          Member since {new Date(selectedProduct.created_at).getFullYear()}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Comments Section */}
+                <div className="border-t pt-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <MessageCircle className="h-5 w-5 mr-2" />
+                    Comments & Questions
+                  </h3>
+                  
+                  {/* Add Comment Form */}
+                  {user && (
+                    <div className="mb-6">
+                      <div className="flex space-x-3">
+                        <img
+                          src={user.profile?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`}
+                          alt={user.profile?.name || user.email}
+                          className="w-10 h-10 rounded-full"
+                        />
+                        <div className="flex-1">
+                          <input
+                            type="text"
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                            placeholder="Ask a question or leave a comment..."
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter') {
+                                handleProductComment(selectedProduct.id);
+                              }
+                            }}
+                          />
+                          <div className="flex justify-end mt-3">
+                            <button 
+                              onClick={() => handleProductComment(selectedProduct.id)}
+                              disabled={!newComment.trim()}
+                              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                            >
+                              <Send className="h-4 w-4 mr-1" />
+                              Post Comment
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Comments */}
+                  <div className="space-y-4">
+                    {selectedProduct.comments && selectedProduct.comments.length > 0 ? (
+                      selectedProduct.comments.map((comment: any) => (
+                        <div key={comment.id} className="flex space-x-3">
+                          <img
+                            src={comment.author?.avatar || comment.profiles?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${comment.author?.name || comment.profiles?.name || 'default'}`}
+                            alt={comment.author?.name || comment.profiles?.name || 'User'}
+                            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex-shrink-0 ring-2 ring-gray-100"
+                          />
+                          <div className="flex-1">
+                            <div className="bg-gray-50 rounded-2xl p-3 sm:p-4">
+                              <div className="flex items-center space-x-2 mb-1">
+                                <span className="font-semibold text-sm sm:text-base text-gray-900">
+                                  {comment.author?.name || comment.profiles?.name || 'User'}
+                                </span>
+                                {comment.user_id === selectedProduct.user_id && (
+                                  <span className="px-2 py-0.5 bg-purple-100 text-purple-800 text-xs rounded-full">
+                                    Seller
+                                  </span>
+                                )}
+                                <span className="text-xs text-gray-500">
+                                  {new Date(comment.created_at).toLocaleDateString()}
+                                </span>
+                              </div>
+                              <p className="text-sm sm:text-base text-gray-700 leading-relaxed">{comment.content}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-8 text-gray-500">
+                        <MessageCircle className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                        <p className="font-medium">No comments yet</p>
+                        <p className="text-sm text-gray-400">Be the first to ask a question!</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}

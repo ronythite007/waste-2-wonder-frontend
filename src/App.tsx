@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Login from './components/Login';
 import Landing from './components/Landing';
@@ -7,7 +8,7 @@ import WasteUpload from './components/WasteUpload';
 import Suggestions from './components/Suggestions';
 import EnhancedMarketplace from './components/EnhancedMarketplace';
 import EnhancedEcoTracker from './components/EnhancedEcoTracker';
-import EnhancedAdminPanel from './components/EnhancedAdminPanel';
+import AdminPanel from './components/AdminPanel';
 import Community from './components/Community';
 import UserProfile from './components/UserProfile';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -15,6 +16,28 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { WasteProvider } from './contexts/WasteContext';
 import { MarketplaceProvider } from './contexts/MarketplaceContext';
 import { CommunityProvider } from './contexts/CommunityContext';
+
+// Smart Redirect component that waits for profile to load
+function SmartRedirect({ fallback }: { fallback: string }) {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Only redirect if we're on login or landing page
+    if (!['/login', '/'].includes(location.pathname)) return;
+    
+    if (user && user.profile) {
+      const redirectTo = user.profile.role === 'admin' ? '/admin' : '/dashboard';
+      // Small delay to ensure state is updated
+      setTimeout(() => {
+        navigate(redirectTo, { replace: true });
+      }, 100);
+    }
+  }, [user, user?.profile, navigate, location.pathname]);
+
+  return <Navigate to={fallback} />;
+}
 
 function AppContent() {
   const { user, loading } = useAuth();
@@ -27,8 +50,6 @@ function AppContent() {
     );
   }
 
-  
-
   return (
     <div className="min-h-screen bg-gray-50">
       <Router>
@@ -39,8 +60,8 @@ function AppContent() {
         <div className="pb-20 md:pb-0" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 5rem)' }}>
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={!user ? <Landing /> : <Navigate to="/dashboard" />} />
-          <Route path="/login" element={!user ? <Login /> : <Navigate to="/dashboard" />} />
+          <Route path="/" element={!user ? <Landing /> : <SmartRedirect fallback="/dashboard" />} />
+          <Route path="/login" element={!user ? <Login /> : <SmartRedirect fallback="/dashboard" />} />
           
           {/* Protected Routes */}
           <Route path="/dashboard" element={
@@ -80,7 +101,7 @@ function AppContent() {
           } />
           <Route path="/admin" element={
             <ProtectedRoute>
-              {user?.profile?.role === 'admin' ? <EnhancedAdminPanel /> : <Navigate to="/dashboard" />}
+              {user?.profile?.role === 'admin' ? <AdminPanel /> : <Navigate to="/dashboard" />}
             </ProtectedRoute>
           } />
         </Routes>
