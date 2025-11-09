@@ -120,7 +120,7 @@ export default function Suggestions() {
           </p>
         </div>
 
-        {/* Generate Suggestions Section */}
+        {/* Generate Suggestions Section
         {userWasteItems.length > 0 && (
           <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
@@ -148,7 +148,7 @@ export default function Suggestions() {
               </div>
             )}
           </div>
-        )}
+        )} */}
 
         {/* Search and Filter */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
