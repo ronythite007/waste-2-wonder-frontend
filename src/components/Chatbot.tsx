@@ -11,7 +11,7 @@ import { Bot } from 'lucide-react';
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { type: 'bot', content: 'Hello! I\'m your Waste2Wonder assistant. How can I help you today?' }
+    { type: 'bot', content: 'Hello! I\'m Wonder, your Waste2Wonder assistant. 🌱\n\nI can help you find creative ways to **recycle**, **upcycle**, and **reuse** your waste materials!\n\nTry asking me things like:\n• "How can I upcycle plastic bottles?"\n• "Ideas for reusing cardboard boxes"\n• "What can I make from old t-shirts?"\n\nWhat would you like to transform today?' }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -102,6 +102,26 @@ export default function Chatbot() {
     </button>
 </div>
 
+          {/* Instructions Section */}
+          <div className="px-2 sm:px-4 py-2 sm:py-3 bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 border-b border-emerald-100">
+            <div className="flex items-center justify-center text-xs sm:text-sm">
+              <div className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-1 bg-white/70 backdrop-blur-sm px-2 sm:px-3 py-1.5 rounded-lg sm:rounded-full shadow-sm border border-emerald-200 max-w-full">
+                <div className="flex items-center space-x-1">
+                  <span className="text-sm sm:text-lg animate-pulse">🌱</span>
+                  <span className="font-semibold text-emerald-700 text-xs sm:text-sm">Smart Tip:</span>
+                  <span className="text-emerald-600 text-xs sm:text-sm hidden sm:inline">Try</span>
+                </div>
+                <div className="flex items-center space-x-1 flex-wrap justify-center">
+                  <span className="px-1.5 sm:px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-medium text-xs">"recycle"</span>
+                  <span className="px-1.5 sm:px-2 py-0.5 bg-teal-100 text-teal-800 rounded font-medium text-xs">"upcycle"</span>
+                  <span className="px-1.5 sm:px-2 py-0.5 bg-cyan-100 text-cyan-800 rounded font-medium text-xs">"reuse"</span>
+                  <span className="text-emerald-600 text-xs sm:text-sm">+ items!</span>
+                  <span className="text-sm sm:text-lg">✨</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Messages */}
           {/* <div className="flex-1 overflow-y-auto p-6 space-y-4">
             {messages.map((message, index) => (
@@ -168,7 +188,7 @@ export default function Chatbot() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Type your message..."
+                placeholder="Ask me to upcycle, recycle, or reuse your items..."
                 className="flex-1 border rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 text-base"
               />
               <button
