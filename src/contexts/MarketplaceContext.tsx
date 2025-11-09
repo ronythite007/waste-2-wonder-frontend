@@ -13,6 +13,8 @@ interface MarketplaceContextType {
   getProductsByUser: (userId: string) => Product[];
   searchProducts: (query: string) => Product[];
   refreshProducts: () => Promise<void>;
+  addProductComment: (productId: string, comment: { content: string }) => Promise<boolean>;
+  likeProduct: (productId: string, userId: string) => Promise<boolean>;
 }
 
 const MarketplaceContext = createContext<MarketplaceContextType | undefined>(undefined);
@@ -194,6 +196,51 @@ export function MarketplaceProvider({ children }: { children: React.ReactNode })
     );
   };
 
+  const addProductComment = async (productId: string, comment: { content: string }): Promise<boolean> => {
+    if (!user) return false;
+
+    const newComment = {
+      id: Date.now().toString(),
+      content: comment.content,
+      user_id: user.id,
+      product_id: productId,
+      created_at: new Date().toISOString(),
+      author: {
+        name: user.profile?.name || user.email?.split('@')[0] || 'User',
+        avatar: user.profile?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`
+      }
+    };
+
+    setProducts(prev => prev.map(product => 
+      product.id === productId 
+        ? { ...product, comments: [...(product.comments || []), newComment] }
+        : product
+    ));
+
+    return true;
+  };
+
+  const likeProduct = async (productId: string, userId: string): Promise<boolean> => {
+    if (!user) return false;
+
+    setProducts(prev => prev.map(product => {
+      if (product.id === productId) {
+        const currentLikes = product.likes || [];
+        const isLiked = currentLikes.includes(userId);
+        
+        return {
+          ...product,
+          likes: isLiked 
+            ? currentLikes.filter(id => id !== userId)
+            : [...currentLikes, userId]
+        };
+      }
+      return product;
+    }));
+
+    return true;
+  };
+
   return (
     <MarketplaceContext.Provider value={{
       products,
@@ -204,7 +251,9 @@ export function MarketplaceProvider({ children }: { children: React.ReactNode })
       getProductsByCategory,
       getProductsByUser,
       searchProducts,
-      refreshProducts
+      refreshProducts,
+      addProductComment,
+      likeProduct
     }}>
       {children}
     </MarketplaceContext.Provider>

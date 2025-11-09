@@ -238,7 +238,7 @@ export default function Dashboard() {
             {savedSuggestions.length > 3 && (
               <div className="mt-4 text-center">
                 <Link
-                  to="/eco-tracker?tab=suggestions"
+                  to="/suggestions?tab=suggestions"
                   className="inline-flex items-center text-yellow-600 hover:text-yellow-700 font-medium"
                 >
                   View All Saved Ideas

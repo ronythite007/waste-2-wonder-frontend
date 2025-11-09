@@ -43,7 +43,7 @@ import {
 
 export default function EnhancedMarketplace() {
   const { user } = useAuth();
-  const { products, addProduct, searchProducts, updateProduct, deleteProduct } = useMarketplace();
+  const { products, addProduct, searchProducts, updateProduct, deleteProduct, addProductComment, likeProduct } = useMarketplace();
   const productFileInputRef = useRef<HTMLInputElement>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
@@ -61,8 +61,6 @@ export default function EnhancedMarketplace() {
   const [dragActive, setDragActive] = useState(false);
   const [productImages, setProductImages] = useState<string[]>([]);
   const [newComment, setNewComment] = useState('');
-  const [productComments, setProductComments] = useState<Record<string, any[]>>({});
-  const [productLikes, setProductLikes] = useState<Record<string, string[]>>({});
   
 
   const [newProduct, setNewProduct] = useState({
@@ -112,12 +110,7 @@ export default function EnhancedMarketplace() {
     { value: 'popular', label: 'Most Popular' }
   ];
 
-  // Add comments and likes to products
-  const enhancedProducts = products.map(product => ({
-    ...product,
-    comments: productComments[product.id] || [],
-    likes: productLikes[product.id] || []
-  }));
+  const enhancedProducts = products;
 
   const handleMultipleImageUpload = (files: FileList) => {
     const newImages: string[] = [];
@@ -242,49 +235,13 @@ export default function EnhancedMarketplace() {
   const handleProductComment = async (productId: string) => {
     if (!user || !newComment.trim()) return;
     
-    const comment = {
-      id: Date.now().toString(),
-      content: newComment.trim(),
-      user_id: user.id,
-      product_id: productId,
-      created_at: new Date().toISOString(),
-      author: {
-        name: user.profile?.name || user.email?.split('@')[0] || 'User',
-        avatar: user.profile?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`
-      }
-    };
-    
-    // Add comment to local state
-    setProductComments(prev => ({
-      ...prev,
-      [productId]: [...(prev[productId] || []), comment]
-    }));
-    
-    // Update the selected product's comments
-    if (selectedProduct && selectedProduct.id === productId) {
-      setSelectedProduct(prev => ({
-        ...prev,
-        comments: [...(prev.comments || []), comment]
-      }));
-    }
-    
+    await addProductComment(productId, { content: newComment.trim() });
     setNewComment('');
   };
 
   const handleProductLike = (productId: string) => {
     if (!user) return;
-    
-    setProductLikes(prev => {
-      const currentLikes = prev[productId] || [];
-      const isLiked = currentLikes.includes(user.id);
-      
-      return {
-        ...prev,
-        [productId]: isLiked 
-          ? currentLikes.filter(id => id !== user.id)
-          : [...currentLikes, user.id]
-      };
-    });
+    likeProduct(productId, user.id);
   };
 
   const resetForm = () => {

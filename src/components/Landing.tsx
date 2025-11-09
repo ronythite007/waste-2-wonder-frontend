@@ -14,28 +14,28 @@ const Landing = () => {
       {/* Navigation */}
       <nav className="bg-white/80 backdrop-blur supports-[backdrop-filter]:backdrop-blur-md shadow-sm fixed w-full z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center min-w-0 flex-1">
               <img
                 src="/logo.png"
                 alt="Waste2Wonder"
-                className="h-8 w-8 md:h-9 md:w-9 object-contain shrink-0"
+                className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 object-contain shrink-0"
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).style.display = 'none';
                 }}
               />
-              <span className="ml-2 text-xl font-bold text-gray-900">Waste2Wonder</span>
+              <span className="ml-2 text-lg sm:text-xl md:text-2xl font-bold text-gray-900 truncate">Waste2Wonder</span>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <button
                 onClick={() => navigate('/login?mode=signup')}
-                className="px-4 py-2 text-green-600 hover:text-green-700 font-medium"
+                className="px-2 py-1 sm:px-4 sm:py-2 text-sm sm:text-base text-green-600 hover:text-green-700 font-medium"
               >
                 Sign Up
               </button>
               <button
                 onClick={() => navigate('/login')}
-                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                className="px-3 py-1.5 sm:px-4 sm:py-2 border border-transparent rounded-md shadow-sm text-xs sm:text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
               >
                 Login
               </button>
@@ -248,9 +248,9 @@ const Landing = () => {
             <div className="relative p-8 rounded-2xl bg-white shadow-xl ring-1 ring-gray-100">
               <div className="absolute -top-4 -left-4 text-emerald-200 text-6xl select-none">“</div>
               <div className="flex items-center mb-4">
-                <img className="h-12 w-12 rounded-full" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" alt="Sarah" />
+                <img className="h-12 w-12 rounded-full" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Rohan" alt="Rohan" />
                 <div className="ml-4">
-                  <h4 className="text-base font-semibold">Sarah M.</h4>
+                  <h4 className="text-base font-semibold">Rohan</h4>
                   <p className="text-emerald-600 text-sm">Artist</p>
                 </div>
               </div>
@@ -260,9 +260,9 @@ const Landing = () => {
             <div className="relative p-8 rounded-2xl bg-white shadow-xl ring-1 ring-gray-100">
               <div className="absolute -top-4 -left-4 text-blue-200 text-6xl select-none">“</div>
               <div className="flex items-center mb-4">
-                <img className="h-12 w-12 rounded-full" src="https://api.dicebear.com/7.x/avataaars/svg?seed=John" alt="John" />
+                <img className="h-12 w-12 rounded-full" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Pratik" alt="Pratik" />
                 <div className="ml-4">
-                  <h4 className="text-base font-semibold">John D.</h4>
+                  <h4 className="text-base font-semibold">Pratik</h4>
                   <p className="text-blue-600 text-sm">DIY Enthusiast</p>
                 </div>
               </div>
@@ -272,9 +272,9 @@ const Landing = () => {
             <div className="relative p-8 rounded-2xl bg-white shadow-xl ring-1 ring-gray-100">
               <div className="absolute -top-4 -left-4 text-purple-200 text-6xl select-none">“</div>
               <div className="flex items-center mb-4">
-                <img className="h-12 w-12 rounded-full" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Emily" alt="Emily" />
+                <img className="h-12 w-12 rounded-full" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sourabh" alt="Sourabh" />
                 <div className="ml-4">
-                  <h4 className="text-base font-semibold">Emily R.</h4>
+                  <h4 className="text-base font-semibold">Sourabh</h4>
                   <p className="text-purple-600 text-sm">Eco-Entrepreneur</p>
                 </div>
               </div>

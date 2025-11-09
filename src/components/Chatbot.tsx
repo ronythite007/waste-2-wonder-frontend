@@ -89,10 +89,10 @@ export default function Chatbot() {
             {/* Header */}
             
 <div className="p-6 bg-green-600 text-white rounded-t-lg flex justify-between items-center">
-    {/* This inner div groups the Bot icon and the WonderAI text */}
-    <div className="flex items-center space-x-2"> 
-        <Bot size={24} /> {/* Add the Bot icon here */}
-        <h3 className="text-xl font-semibold">WonderAI</h3>
+    {/* This inner div groups the Bot icon and the Waste2Wonder text */}
+    <div className="flex items-center space-x-3"> 
+        <Bot size={32} /> {/* Increased icon size */}
+        <h3 className="text-2xl font-bold">Waste2Wonder</h3>
     </div>
     <button
         onClick={() => setIsOpen(false)}
